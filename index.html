@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Cartelera de películas en cines de Guatemala" />
+  <title>Cartelera | CineGT</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="cinema-body">
+  <nav class="navbar navbar-expand-lg navbar-dark cinema-nav sticky-top border-bottom border-secondary border-opacity-25">
+    <div class="container-fluid px-3 px-lg-4">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+        <span class="brand-icon">C</span>
+        <span class="brand-text">CINE<span class="text-danger">GT</span></span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Menú">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+          <li class="nav-item"><a class="nav-link" href="#cartelera">Cartelera</a></li>
+          <li class="nav-item"><a class="nav-link" href="#filtros">Filtros</a></li>
+        </ul>
+        <button type="button" id="btn-refresh" class="btn btn-outline-light btn-sm d-flex align-items-center gap-2">
+          <i class="bi bi-arrow-clockwise" id="icon-refresh"></i>
+          <span class="d-none d-sm-inline">Actualizar</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container-fluid px-3 px-lg-4 py-4">
+    <!-- Hero -->
+    <section id="hero" class="mb-4">
+      <div id="hero-content" class="card cinema-hero-card border-secondary border-opacity-25 overflow-hidden">
+        <div id="hero-skeleton" class="placeholder-glow p-5" style="min-height: 280px;">
+          <span class="placeholder col-12 bg-secondary rounded mb-3" style="height: 200px;"></span>
+          <span class="placeholder col-8 bg-secondary rounded"></span>
+        </div>
+        <div id="hero-inner" class="row g-0 d-none">
+          <div class="col-md-5 col-lg-4">
+            <img id="hero-poster" src="" alt="" class="w-100 h-100 object-fit-cover" style="min-height: 280px; max-height: 420px;" />
+          </div>
+          <div class="col-md-7 col-lg-8 d-flex flex-column justify-content-center p-4 p-lg-5">
+            <span id="hero-badge" class="badge bg-danger mb-2 align-self-start"></span>
+            <h1 id="hero-title" class="display-4 font-bebas mb-2"></h1>
+            <p id="hero-meta" class="text-secondary mb-3"></p>
+            <p id="hero-desc" class="text-light-emphasis mb-4 line-clamp-3"></p>
+            <div class="d-flex flex-wrap gap-2">
+              <button type="button" id="hero-detail-btn" class="btn btn-danger">
+                <i class="bi bi-play-circle me-1"></i> Ver detalles
+              </button>
+              <span id="hero-location" class="btn btn-outline-secondary disabled text-start"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="row g-3 mb-4">
+      <div class="col-6 col-lg-3">
+        <div class="card cinema-stat-card h-100">
+          <div class="card-body">
+            <small class="text-secondary text-uppercase">Total</small>
+            <p id="stat-total" class="font-bebas display-6 mb-0">—</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="card cinema-stat-card h-100">
+          <div class="card-body">
+            <small class="text-secondary text-uppercase">En cartelera</small>
+            <p id="stat-active" class="font-bebas display-6 mb-0 text-success">—</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="card cinema-stat-card h-100">
+          <div class="card-body">
+            <small class="text-secondary text-uppercase">Géneros</small>
+            <p id="stat-genres" class="font-bebas display-6 mb-0 text-warning">—</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="card cinema-stat-card h-100">
+          <div class="card-body">
+            <small class="text-secondary text-uppercase">Ubicaciones</small>
+            <p id="stat-locations" class="font-bebas display-6 mb-0">—</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Alerta API -->
+    <div id="api-alert" class="alert alert-warning d-none align-items-start gap-2" role="alert">
+      <i class="bi bi-exclamation-triangle-fill flex-shrink-0 mt-1"></i>
+      <p id="api-alert-text" class="mb-0 small"></p>
+    </div>
+
+    <!-- Filtros -->
+    <section id="filtros" class="card cinema-filter-card border-secondary border-opacity-25 mb-4">
+      <div class="card-body">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+          <h2 id="cartelera" class="font-bebas display-6 mb-0">Cartelera</h2>
+          <div class="btn-group" role="group" aria-label="Vista">
+            <button type="button" data-view="grid" class="btn btn-outline-light view-btn active" aria-pressed="true" title="Cuadrícula">
+              <i class="bi bi-grid-3x3-gap"></i>
+            </button>
+            <button type="button" data-view="list" class="btn btn-outline-light view-btn" aria-pressed="false" title="Lista">
+              <i class="bi bi-list-ul"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="row g-2 g-lg-3">
+          <div class="col-12 col-lg-4">
+            <div class="input-group">
+              <span class="input-group-text bg-dark border-secondary"><i class="bi bi-search"></i></span>
+              <input id="filter-search" type="search" class="form-control bg-dark text-light border-secondary" placeholder="Buscar título, descripción..." autocomplete="off" />
+            </div>
+          </div>
+          <div class="col-6 col-md-3 col-lg-2">
+            <select id="filter-type" class="form-select bg-dark text-light border-secondary" aria-label="Género">
+              <option value="">Todos los géneros</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-3 col-lg-2">
+            <select id="filter-location" class="form-select bg-dark text-light border-secondary" aria-label="Ubicación">
+              <option value="">Todas las ubicaciones</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-3 col-lg-2">
+            <select id="filter-year" class="form-select bg-dark text-light border-secondary" aria-label="Año">
+              <option value="">Todos los años</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-3 col-lg-2">
+            <select id="filter-status" class="form-select bg-dark text-light border-secondary" aria-label="Estado">
+              <option value="">Todos los estados</option>
+              <option value="true">En cartelera</option>
+              <option value="false">No disponible</option>
+              <option value="null">Sin definir</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3 pt-3 border-top border-secondary border-opacity-25">
+          <div class="d-flex align-items-center gap-2">
+            <label for="filter-sort" class="small text-secondary text-uppercase mb-0">Ordenar</label>
+            <select id="filter-sort" class="form-select form-select-sm bg-dark text-light border-secondary" style="width: auto; min-width: 160px;">
+              <option value="date-desc">Más recientes</option>
+              <option value="date-asc">Más antiguos</option>
+              <option value="title-asc">Título A-Z</option>
+              <option value="title-desc">Título Z-A</option>
+              <option value="year-desc">Año (nuevo)</option>
+              <option value="year-asc">Año (antiguo)</option>
+            </select>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <span id="results-count" class="small text-secondary">Cargando...</span>
+            <button type="button" id="btn-clear-filters" class="btn btn-link btn-sm text-danger p-0 d-none">Limpiar filtros</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Películas -->
+    <section>
+      <div id="loading-grid" class="row row-cols-2 row-cols-sm-3 row-cols-lg-4 row-cols-xl-5 g-3"></div>
+      <div id="movies-grid" class="row row-cols-2 row-cols-sm-3 row-cols-lg-4 row-cols-xl-5 g-3 d-none view-grid" role="list"></div>
+      <div id="empty-state" class="text-center py-5 d-none">
+        <i class="bi bi-film display-1 text-secondary"></i>
+        <h3 class="font-bebas mt-3">Sin resultados</h3>
+        <p class="text-secondary">No hay películas con esos filtros.</p>
+        <button type="button" id="empty-clear-btn" class="btn btn-outline-danger btn-sm mt-2">Limpiar filtros</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-top border-secondary border-opacity-25 py-4 mt-4">
+    <div class="container-fluid px-3 px-lg-4 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 small text-secondary">
+      <p class="mb-0">© <span id="year-footer"></span> CineGT — Cartelera Guatemala</p>
+      <p class="mb-0">Datos: <a href="http://52.171.58.51:8080/api/cartelera" class="link-danger" target="_blank" rel="noopener">API Cartelera</a></p>
+    </div>
+  </footer>
+
+  <!-- Modal Bootstrap -->
+  <div class="modal fade" id="movie-modal" tabindex="-1" aria-labelledby="modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+      <div class="modal-content cinema-modal-content">
+        <div class="modal-header border-secondary border-opacity-25">
+          <h2 class="modal-title font-bebas display-6" id="modal-title"></h2>
+          <button type="button" id="modal-close" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-0">
+          <div class="row g-0">
+            <div class="col-md-4">
+              <img id="modal-poster" src="" alt="" class="w-100 object-fit-cover" style="min-height: 280px;" />
+            </div>
+            <div class="col-md-8 p-4">
+              <div id="modal-badges" class="d-flex flex-wrap gap-2 mb-3"></div>
+              <p id="modal-meta" class="text-secondary"></p>
+              <p id="modal-description" class="mt-3"></p>
+              <dl class="row g-3 mt-3 small">
+                <div class="col-sm-6">
+                  <dt class="text-secondary text-uppercase">Ubicación</dt>
+                  <dd id="modal-location" class="mb-0 fw-semibold"></dd>
+                </div>
+                <div class="col-sm-6">
+                  <dt class="text-secondary text-uppercase">Registro</dt>
+                  <dd id="modal-date" class="mb-0 fw-semibold"></dd>
+                </div>
+                <div class="col-12">
+                  <dt class="text-secondary text-uppercase">ID</dt>
+                  <dd id="modal-id" class="mb-0 font-monospace text-secondary small"></dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/fallback-data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

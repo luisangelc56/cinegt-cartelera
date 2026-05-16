@@ -1,6 +1,5 @@
 const API_URL = 'http://52.171.58.51:8080/api/cartelera';
 const POSTER_FALLBACK = 'https://placehold.co/400x600/1a1a2e/71717a?text=Sin+poster';
-const FALLBACK_MOVIES = window.FALLBACK_MOVIES || [];
 const FETCH_TIMEOUT_MS = 12000;
 
 const state = {
@@ -484,15 +483,15 @@ async function fetchMovies() {
     state.movies = data;
     hideApiAlert();
   } catch (err) {
-    console.warn('Usando datos locales:', err);
-    state.movies = FALLBACK_MOVIES.length ? FALLBACK_MOVIES : [];
-    if (state.movies.length === 0) {
-      showApiAlert('No hay datos disponibles. Revisa la conexión a la API.');
-    } else {
-      showApiAlert(
-        `API no disponible (${err.name === 'AbortError' ? 'tiempo agotado' : err.message}). Mostrando ${state.movies.length} películas locales.`
-      );
-    }
+    console.error('Error al cargar la cartelera:', err);
+    state.movies = [];
+    const reason =
+      err.name === 'AbortError'
+        ? 'tiempo de espera agotado'
+        : err.message || 'error de conexión';
+    showApiAlert(
+      `No se pudo cargar la cartelera (${reason}). Comprueba la API e intenta actualizar.`
+    );
   } finally {
     els.iconRefresh?.classList.remove('spin');
   }

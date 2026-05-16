@@ -1,4 +1,4 @@
-const API_URL = 'http://52.171.58.51:8080/api/cartelera';
+const API_URL = '/api/cartelera';
 const POSTER_FALLBACK = 'https://placehold.co/400x600/1a1a2e/71717a?text=Sin+poster';
 const FETCH_TIMEOUT_MS = 12000;
 
